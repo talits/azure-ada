@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  wordpress_directory: 'src/wordpress'
+  destination_path: '/var/www/html/wordpress'
+  server_ip: 'SEU_SERVIDOR_IP'
+  ssh_username: 'SEU_USUARIO_SSH'
+  ssh_password: $(SSH_PASSWORD)
+
+stages:
+  - stage: Deploy
+    jobs:
+      - job: TransferWordPressFiles
+        displayName: "Deploy de Arquivos WordPress"
+        steps:
+          - task: CopyFilesOverSSH@0
+            inputs:
+              sshEndpoint: 'ServidorWordPress'
+              sourceFolder: '$(Build.SourcesDirectory)/$(wordpress_directory)'
+              contents: '**/*'
+              targetFolder: '$(destination_path)'
+              cleanTargetFolder: true
